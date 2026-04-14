@@ -1,2 +1,11 @@
--r ../requirements.txt
+Flask>=3.0.0
+requests>=2.32.0
+openai>=1.0.0
+python-dotenv>=1.0.0
 
+baidu-aip>=4.16.0
+
+pandas>=2.2.0
+openpyxl>=3.1.0
+
+pydub>=0.25.1
