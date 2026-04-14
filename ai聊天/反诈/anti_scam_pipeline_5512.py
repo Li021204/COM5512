@@ -66,7 +66,12 @@ def _ocr_baidu(image_bytes: bytes) -> str:
             _LAST_OCR_ERROR = "百度OCR返回非预期格式"
             return ""
         if ocr_result.get("error_code"):
-            _LAST_OCR_ERROR = f"百度OCR失败 error_code={ocr_result.get('error_code')} error_msg={ocr_result.get('error_msg')}"
+            code = ocr_result.get("error_code")
+            msg = ocr_result.get("error_msg")
+            extra = ""
+            if str(code) == "14":
+                extra = "（认证失败：请检查 BAIDU_APP_ID/BAIDU_API_KEY/BAIDU_SECRET_KEY 是否来自同一个百度OCR应用，且未填错/过期/无权限）"
+            _LAST_OCR_ERROR = f"百度OCR失败 error_code={code} error_msg={msg}{extra}"
             return ""
         words = [
             str(item.get("words", "")).strip()

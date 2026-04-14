@@ -78,6 +78,93 @@ def _inspect_wav(wav_bytes: bytes) -> tuple[int, int, int]:
         return int(wf.getframerate()), int(wf.getnchannels()), int(wf.getsampwidth())
 
 
+def _normalize_wav_to_16k_mono_16bit(wav_bytes: bytes) -> bytes:
+    """
+    Convert WAV bytes to: 16kHz, mono, 16-bit PCM using stdlib only.
+    This makes uploads from iOS/macOS (often 24k/44.1k) compatible with Baidu ASR.
+
+    Notes:
+    - Pure-python linear resampling (no audioop; removed in Python 3.13).
+    - Only supports uncompressed PCM WAV.
+    """
+    import math
+    import struct
+    from array import array
+
+    with wave.open(io.BytesIO(wav_bytes), "rb") as wf:
+        sr = int(wf.getframerate())
+        ch = int(wf.getnchannels())
+        sw = int(wf.getsampwidth())
+        comp = str(wf.getcomptype() or "")
+        if comp != "NONE":
+            raise RuntimeError(f"WAV 压缩格式不支持：{comp}（请上传 PCM WAV）")
+        frames = wf.readframes(wf.getnframes())
+
+    if sw != 2:
+        raise RuntimeError(f"WAV 位宽不支持：{sw*8}bit（请上传 16bit PCM WAV）")
+
+    # Decode little-endian int16 samples
+    if len(frames) % 2 != 0:
+        raise RuntimeError("WAV 数据长度异常（非 16bit 对齐）")
+    a = array("h")
+    a.frombytes(frames)
+    # array('h') is native-endian; WAV is little-endian. Fix if needed.
+    if struct.pack("=h", 1) != b"\x01\x00":  # big-endian host
+        a.byteswap()
+
+    # Stereo -> mono (average channels)
+    if ch == 2:
+        mono = array("h")
+        for i in range(0, len(a) - 1, 2):
+            mono.append(int((int(a[i]) + int(a[i + 1])) / 2))
+        a = mono
+        ch = 1
+    elif ch != 1:
+        raise RuntimeError(f"WAV 声道不支持：{ch}（请上传单声道或双声道 WAV）")
+
+    # Resample to 16k if needed (linear interpolation)
+    target_sr = 16000
+    if sr != target_sr:
+        if len(a) < 2:
+            raise RuntimeError("WAV 音频过短，无法重采样")
+        ratio = target_sr / float(sr)
+        new_len = max(1, int(math.floor(len(a) * ratio)))
+        out_samples = array("h")
+        for i in range(new_len):
+            pos = i / ratio  # pos in original sample index
+            idx = int(pos)
+            if idx >= len(a) - 1:
+                s = int(a[-1])
+            else:
+                frac = pos - idx
+                s0 = int(a[idx])
+                s1 = int(a[idx + 1])
+                s = int(round((1.0 - frac) * s0 + frac * s1))
+            # clamp int16
+            if s > 32767:
+                s = 32767
+            elif s < -32768:
+                s = -32768
+            out_samples.append(s)
+        a = out_samples
+        sr = target_sr
+
+    out = io.BytesIO()
+    with wave.open(out, "wb") as wo:
+        wo.setnchannels(ch)
+        wo.setsampwidth(sw)
+        wo.setframerate(sr)
+        # Write little-endian int16 bytes
+        frames2 = a.tobytes()
+        # array uses native endianness
+        if struct.pack("=h", 1) != b"\x01\x00":  # big-endian host
+            a2 = array("h", a)
+            a2.byteswap()
+            frames2 = a2.tobytes()
+        wo.writeframes(frames2)
+    return out.getvalue()
+
+
 # ==================== 1. 输入层：OCR 函数 ====================
 def ocr_from_image_bytes(image_bytes: bytes) -> str:
     """
@@ -141,19 +228,12 @@ def audio_to_text_from_bytes(audio_bytes: bytes, audio_format: str = 'wav', samp
         if fmt == "wav":
             try:
                 wav_sr, wav_ch, wav_sw = _inspect_wav(audio_bytes)
-                if wav_sr != 16000:
-                    _LAST_ASR_ERROR = f"WAV 采样率不支持：{wav_sr}Hz（请提供 16000Hz）"
-                    return ""
-                if wav_ch != 1:
-                    _LAST_ASR_ERROR = f"WAV 声道不支持：{wav_ch}（请提供单声道）"
-                    return ""
-                if wav_sw != 2:
-                    _LAST_ASR_ERROR = f"WAV 位宽不支持：{wav_sw*8}bit（请提供 16bit PCM）"
-                    return ""
-                # Baidu ASR accepts wav when params match.
+                # Normalize common WAV formats (24k/44.1k, stereo, 32bit float...) to Baidu-friendly WAV.
+                if wav_sr != 16000 or wav_ch != 1 or wav_sw != 2:
+                    data = _normalize_wav_to_16k_mono_16bit(audio_bytes)
                 sr = 16000
             except Exception as e:
-                _LAST_ASR_ERROR = f"WAV 解析失败：{e}"
+                _LAST_ASR_ERROR = f"WAV 处理失败：{e}"
                 return ""
 
         result = speech_client.asr(
