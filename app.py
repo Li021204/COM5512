@@ -22,6 +22,57 @@ app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024  # 25MB
 
 
+@app.get("/api/diag/anti_fraud")
+def api_diag_anti_fraud():
+    """
+    Diagnostics endpoint for Vercel deployments.
+    Returns which OCR/ASR backends are available and whether required env vars are present.
+    """
+    def has(k: str) -> bool:
+        return bool(os.getenv(k, "").strip())
+
+    # Image pipeline (anti_scam_pipeline_5512)
+    image_diag = {}
+    try:
+        from anti_fraud_engine import _load_pipeline_module  # type: ignore
+
+        mod = _load_pipeline_module()
+        if mod:
+            image_diag = {
+                "pipeline_loaded": True,
+                "has_baidu_ocr_env": has("BAIDU_APP_ID") and has("BAIDU_API_KEY") and has("BAIDU_SECRET_KEY"),
+                "aip_imported": bool(getattr(mod, "AipOcr", None)),
+                "baidu_client_initialized": bool(getattr(mod, "client", None)),
+                "last_ocr_error": str(getattr(mod, "_LAST_OCR_ERROR", "") or "")[:260],
+            }
+        else:
+            image_diag = {"pipeline_loaded": False}
+    except Exception as e:
+        image_diag = {"pipeline_loaded": False, "error": str(e)[:260]}
+
+    # Audio pipeline (诈骗电话识别.py)
+    audio_diag = {}
+    try:
+        mod2 = _get_phone_scam_module()
+        audio_diag = {
+            "module_loaded": True,
+            "has_baidu_asr_env": has("SPEECH_APP_ID") and has("SPEECH_API_KEY") and has("SPEECH_SECRET_KEY"),
+            "aip_speech_imported": bool(getattr(mod2, "AipSpeech", None)),
+            "speech_client_initialized": bool(getattr(mod2, "speech_client", None)),
+            "last_asr_error": str(getattr(mod2, "_LAST_ASR_ERROR", "") or "")[:260],
+        }
+    except Exception as e:
+        audio_diag = {"module_loaded": False, "error": str(e)[:260]}
+
+    return jsonify(
+        ok=True,
+        vercel=bool(os.getenv("VERCEL")),
+        image=image_diag,
+        audio=audio_diag,
+        deepseek=bool(os.getenv("DEEPSEEK_API_KEY", "").strip()),
+    )
+
+
 @app.get("/")
 def index():
     contacts = [

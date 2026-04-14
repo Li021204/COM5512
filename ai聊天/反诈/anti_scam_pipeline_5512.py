@@ -45,24 +45,38 @@ client = (
 
 # RapidOCR 懒加载（不依赖百度账号，适合本地开发）
 _RAPID_OCR_ENGINE = None
+_LAST_OCR_ERROR = ""
 
 
 def _ocr_baidu(image_bytes: bytes) -> str:
+    global _LAST_OCR_ERROR
     if client is None:
+        if BAIDU_APP_ID and BAIDU_API_KEY and BAIDU_SECRET_KEY and not AipOcr:
+            _LAST_OCR_ERROR = "百度OCR依赖未就绪：未正确安装 baidu-aip（AipOcr 导入失败）"
+        elif BAIDU_APP_ID and BAIDU_API_KEY and BAIDU_SECRET_KEY and AipOcr and not client:
+            _LAST_OCR_ERROR = "百度OCR客户端未初始化（请检查密钥是否有效）"
+        else:
+            _LAST_OCR_ERROR = "未配置百度OCR：BAIDU_APP_ID / BAIDU_API_KEY / BAIDU_SECRET_KEY"
         return ""
     try:
         ocr_result = client.accurate(image_bytes)
         if not isinstance(ocr_result, dict):
+            _LAST_OCR_ERROR = "百度OCR返回非预期格式"
             return ""
         if ocr_result.get("error_code"):
+            _LAST_OCR_ERROR = f"百度OCR失败 error_code={ocr_result.get('error_code')} error_msg={ocr_result.get('error_msg')}"
             return ""
         words = [
             str(item.get("words", "")).strip()
             for item in ocr_result.get("words_result", [])
             if isinstance(item, dict) and item.get("words")
         ]
-        return "\n".join(words).strip()
+        text = "\n".join(words).strip()
+        if not text:
+            _LAST_OCR_ERROR = "百度OCR未识别到文字（可能图片过糊/文字太小/配额限制）"
+        return text
     except Exception:
+        _LAST_OCR_ERROR = "百度OCR调用异常（网络/超时/密钥权限/额度）"
         return ""
 
 
@@ -528,6 +542,11 @@ def run_pipeline(text_input: str = None, image_bytes: bytes = None) -> dict:
                 missing = []
                 if not (BAIDU_APP_ID and BAIDU_API_KEY and BAIDU_SECRET_KEY):
                     missing.append("BAIDU_APP_ID / BAIDU_API_KEY / BAIDU_SECRET_KEY")
+                from_reason = ""
+                try:
+                    from_reason = f"\n失败原因：{_LAST_OCR_ERROR}" if _LAST_OCR_ERROR else ""
+                except Exception:
+                    from_reason = ""
                 hint = "；".join(missing) if missing else "百度OCR仍失败（请检查密钥是否有效/是否有调用额度）"
                 return {
                     "success": False,
@@ -535,6 +554,7 @@ def run_pipeline(text_input: str = None, image_bytes: bytes = None) -> dict:
                         "图片识别暂不可用：未能从图片中识别出文字。\n"
                         f"Vercel 部署环境不支持安装本地 OCR 引擎（RapidOCR/Tesseract）。\n"
                         f"请在 Vercel 环境变量中配置百度 OCR：{hint}\n"
+                        f"{from_reason}\n"
                         "或者把短信/链接全文复制粘贴到输入框再发送。"
                     ),
                 }
@@ -545,6 +565,11 @@ def run_pipeline(text_input: str = None, image_bytes: bytes = None) -> dict:
                 missing = []
                 if not (BAIDU_APP_ID and BAIDU_API_KEY and BAIDU_SECRET_KEY):
                     missing.append("BAIDU_APP_ID / BAIDU_API_KEY / BAIDU_SECRET_KEY")
+                from_reason = ""
+                try:
+                    from_reason = f"\n失败原因：{_LAST_OCR_ERROR}" if _LAST_OCR_ERROR else ""
+                except Exception:
+                    from_reason = ""
                 hint = "；".join(missing) if missing else "百度OCR仍失败（请检查密钥是否有效/是否有调用额度）"
                 return {
                     "success": False,
@@ -552,6 +577,7 @@ def run_pipeline(text_input: str = None, image_bytes: bytes = None) -> dict:
                         "已收到图片，但未能从图中识别出文字。\n"
                         f"Vercel 部署环境不支持安装本地 OCR 引擎（RapidOCR/Tesseract）。\n"
                         f"请在 Vercel 环境变量中配置百度 OCR：{hint}\n"
+                        f"{from_reason}\n"
                         "您也可以直接把短信/链接全文复制粘贴到输入框再发送。"
                     ),
                 }
