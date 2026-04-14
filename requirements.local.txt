@@ -1,0 +1,25 @@
+Flask>=3.0.0
+requests>=2.32.0
+openai>=1.0.0
+python-dotenv>=1.0.0
+
+# 本地语音识别（Whisper）
+faster-whisper>=1.1.0
+numpy>=1.26.0
+soundfile>=0.12.1
+
+# OCR（本地 ONNX / Tesseract）
+Pillow>=10.0.0
+rapidocr-onnxruntime>=1.2.3,<1.3
+pytesseract>=0.3.10
+
+# 反诈语音/截图（第三方）
+baidu-aip>=4.16.0
+
+# 诈骗电话识别流水线（Excel 数据库）
+pandas>=2.2.0
+openpyxl>=3.1.0
+
+# 可选：将 mp4/m4a 转换为 wav（需要本机安装 ffmpeg）
+pydub>=0.25.1
+

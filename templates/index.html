@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem("theme") === "dark") document.documentElement.setAttribute("data-theme", "dark");
+        } catch (e) {}
+      })();
+    </script>
+    <title>Silverbridge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v='20260414u15m') }}" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Side navigation">
+        <div class="sidebar__brand" title="Silverbridge">
+          <div class="logoMark">
+            <span class="logoMark__s">S</span>
+          </div>
+        </div>
+
+        <nav class="sidebar__nav">
+          <a class="navIcon isActive" href="#" aria-label="Home" data-view="home" id="navHome">
+            <span class="navIcon__glyph">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+          </a>
+          <a class="navIcon" href="#" aria-label="Quick tools" data-view="quick" id="navQuick">
+            <span class="navIcon__glyph">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M4 5h16v14H4V5Z"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M4 13h4l2 3h4l2-3h4"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+          </a>
+          <a class="navIcon" href="#" aria-label="Messages" data-view="chat" id="navChat">
+            <span class="navIcon__glyph">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M20 15a3 3 0 0 1-3 3H9l-5 3V6a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v9Z"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+          </a>
+          <a class="navIcon" href="#" aria-label="Contacts" data-view="contacts" id="navContacts">
+            <span class="navIcon__glyph">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                />
+                <path
+                  d="M20 21v-2a3.5 3.5 0 0 0-2.6-3.4"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M15.9 3.6a4 4 0 0 1 0 7.8"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </span>
+          </a>
+          <a class="navIcon" href="#" aria-label="Settings" data-view="settings" id="navSettings">
+            <span class="navIcon__glyph">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                />
+                <path
+                  d="M19.4 15a8.7 8.7 0 0 0 .1-1l2-1.5-2-3.4-2.4.7a8.7 8.7 0 0 0-1.6-1l-.4-2.5H11l-.4 2.5a8.7 8.7 0 0 0-1.6 1L6.6 9l-2 3.4 2 1.5a8.7 8.7 0 0 0 .1 1L4.6 16.5l2 3.4 2.4-.7a8.7 8.7 0 0 0 1.6 1l.4 2.5h4l.4-2.5a8.7 8.7 0 0 0 1.6-1l2.4.7 2-3.4-2-1.5Z"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+          </a>
+        </nav>
+
+        <div class="sidebar__spacer"></div>
+        <button class="sidebar__dot sidebar__dot--font" id="fontToggleBtn" type="button" aria-label="切换字体大小">
+          <span class="fontIcon" aria-hidden="true">字</span>
+        </button>
+        <button
+          class="sidebar__dot sidebar__dot--theme"
+          id="themeToggleBtn"
+          type="button"
+          aria-label="切换到暗色模式"
+          title="切换亮色 / 暗色模式"
+        >
+          <svg class="themeIcon themeIcon--sun" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7" />
+            <path
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"
+            />
+          </svg>
+          <svg class="themeIcon themeIcon--moon" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="currentColor"
+              d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"
+            />
+          </svg>
+        </button>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="topbar__left">
+            <div class="brandWord">
+              <img class="topbarLogo" src="{{ url_for('static', filename='img/logo.png', v='20260414t') }}" alt="" />
+              <span>Silverbridge</span>
+            </div>
+          </div>
+          <div class="topbar__right">
+            <button class="iconBtn" aria-label="Notifications">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7Z"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M13.7 21a2 2 0 0 1-3.4 0"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+            <button class="iconBtn" aria-label="Alerts">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M12 9v4"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M12 17.2h.01"
+                  stroke="currentColor"
+                  stroke-width="2.4"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M10.3 4.6 3.3 18.4A1.8 1.8 0 0 0 4.9 21h14.2a1.8 1.8 0 0 0 1.6-2.6L13.7 4.6a1.9 1.9 0 0 0-3.4 0Z"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+            <button class="pill" id="userMenuBtn" type="button" aria-haspopup="dialog" aria-controls="userModal">
+              <span class="pill__text" id="topbarNickname">读春少</span>
+              <span class="pill__chev" aria-hidden="true">▾</span>
+            </button>
+          </div>
+        </header>
+
+        <div class="fitViewport" id="fitViewport">
+          <div class="fitCanvas" id="fitCanvas">
+            <div class="content">
+              <section class="homeView" id="homeView" aria-label="Home view">
+                <div class="homeHero" role="region" aria-label="Welcome">
+                  <div class="homeCenter">
+                    <div class="homeBrand" aria-label="Silverbridge">
+                      <div class="homeBrand__logo" aria-hidden="true">
+                        <img class="homeBrand__logoImg" src="{{ url_for('static', filename='img/logo.png', v='20260414t') }}" alt="" />
+                      </div>
+                    </div>
+
+                    <div class="homeAsk" id="homeAsk" data-text="今天感觉如何？">今天感觉如何？</div>
+
+                    <div class="homeBottom" aria-label="Home bottom cluster">
+                      <div class="homeSug" aria-label="Suggestions">
+                        <button class="homeSug__chip" type="button" data-home-open="anti_fraud">怀疑遇到骗子了？</button>
+                        <button class="homeSug__chip" type="button" data-home-open="health">身体不舒服？</button>
+                        <button class="homeSug__chip" type="button" data-home-open="intergen">与子女沟通遇到问题？</button>
+                      </div>
+
+                      <div class="homeComposer" aria-label="Home input">
+                        <input class="homeComposer__input" id="homeInput" placeholder="输入你的需求，进入聊天继续…" />
+                        <button class="homeComposer__btn" id="homeGoBtn" type="button" aria-label="开始聊天">→</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="quickView" id="quickView" hidden aria-label="便捷功能页面">
+                <div class="quickShell" role="region" aria-label="便捷功能">
+                  <div class="quickShell__header">
+                    <div class="quickShell__title">便捷功能</div>
+                    <div class="quickShell__actions">
+                      <button class="setBtn" id="quickEditLayoutBtn" type="button">编辑布局</button>
+                      <button class="setBtn setBtn--primary" id="quickAddWidgetBtn" type="button">添加小组件</button>
+                    </div>
+                  </div>
+                  <div class="quickShell__sub">当前天气、记事本、用药提醒、提醒事项等，可自由添加。</div>
+                  <div class="quickGrid" id="quickGrid" aria-label="Widgets grid"></div>
+                </div>
+              </section>
+
+              <section class="contactsView" id="contactsView" hidden aria-label="联系人管理界面">
+                <div class="contactsShell" role="region" aria-label="联系人管理">
+                  <div class="contactsShell__header">
+                    <div class="contactsShell__title">联系人管理</div>
+                    <div class="contactsShell__actions">
+                      <button class="setBtn" id="contactsAddBtn" type="button">添加联系人</button>
+                      <button class="setBtn" id="contactsSyncBtn" type="button" aria-label="刷新联系人列表">刷新</button>
+                    </div>
+                  </div>
+                  <div class="contactsShell__sub">包含家人、朋友、群聊与服务。可搜索、查看详情，并快速进入聊天。</div>
+
+                  <div class="contactsToolbar" aria-label="联系人筛选与搜索">
+                    <div class="contactsTabs" role="tablist" aria-label="联系人分类">
+                      <button class="contactsTab isActive" type="button" data-ctab="all" role="tab" aria-selected="true">全部</button>
+                      <button class="contactsTab" type="button" data-ctab="family" role="tab">家人</button>
+                      <button class="contactsTab" type="button" data-ctab="friends" role="tab">朋友</button>
+                      <button class="contactsTab" type="button" data-ctab="groups" role="tab">群聊</button>
+                      <button class="contactsTab" type="button" data-ctab="services" role="tab">服务</button>
+                    </div>
+                    <div class="contactsSearch">
+                      <input class="contactsSearch__input" id="contactsSearchInput" placeholder="搜索联系人/群聊/服务…" />
+                    </div>
+                  </div>
+
+                  <div class="contactsMain" aria-label="联系人列表与详情">
+                    <div class="contactsListPane">
+                      <div class="contactsList" id="contactsMgrList" aria-label="联系人列表"></div>
+                    </div>
+                    <div class="contactsDetailPane" aria-label="联系人详情">
+                      <div class="contactsDetail card" id="contactsMgrDetail" aria-live="polite">
+                        <div class="card__header">
+                          <div class="card__title">详情</div>
+                        </div>
+                        <div class="contactsEmpty">
+                          <div class="contactsEmpty__title">请选择一个联系人</div>
+                          <div class="contactsEmpty__sub">点击左侧列表查看资料与操作。</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <div class="chatShell" id="chatShell" hidden aria-label="Chat shell">
+              <section class="leftCol">
+                <div class="card" id="contactsCard">
+                  <div class="card__header">
+                    <div class="card__title">联系人</div>
+                    <button
+                      class="addBtn"
+                      id="addContactBtn"
+                      type="button"
+                      aria-label="添加联系人"
+                      aria-haspopup="dialog"
+                      aria-expanded="false"
+                      aria-controls="addContactModal"
+                    >
+                      <svg class="addBtn__icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                          d="M12 5v14M5 12h14"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.25"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div class="tabs">
+                    <button class="tab isActive" type="button" data-filter="family">家人</button>
+                    <button class="tab" type="button" data-filter="friends">朋友</button>
+                    <button class="tab" type="button" data-filter="groups">群聊</button>
+                    <button class="tab" type="button" data-filter="services">服务</button>
+                  </div>
+
+                  <div class="list">
+                    {% for c in contacts %}
+                    <div class="row {{ 'isActive' if c.active else '' }}" data-category="{{ c.category | default('family') }}" data-name="{{ c.name }}">
+                      <div class="avatar avatar--a{{ loop.index }}">
+                        <span class="avatar__ring"></span>
+                      </div>
+                      <div class="row__body">
+                        <div class="row__top">
+                          <div class="row__name">{{ c.name }}</div>
+                          <div class="row__meta">{{ c.time }}</div>
+                        </div>
+                        <div class="row__sub">{{ c.last_message if c.last_message else "暂无消息记录，请开始聊天吧！" }}</div>
+                      </div>
+                      {% if c.active %}
+                      <span class="row__badge" aria-label="Active"></span>
+                      {% endif %}
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <div class="card" id="featuresCard">
+                  <div class="card__header">
+                    <div class="card__title">功能</div>
+                  </div>
+                  <div class="list list--compact">
+                    {% for f in features %}
+                    <div class="row" data-feature="{{ f.name }}">
+                      <div class="avatar avatar--b{{ loop.index }}">
+                        <span class="avatar__ring"></span>
+                      </div>
+                      <div class="row__body">
+                        <div class="row__top">
+                          <div class="row__name">{{ f.name }}</div>
+                        </div>
+                        <div class="row__sub">{{ f.meta }}</div>
+                      </div>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <div class="card settingsLeft" id="settingsLeft" hidden aria-label="一级设置（左侧）">
+                  <div class="card__header">
+                    <div class="card__title">设置</div>
+                  </div>
+                  <div class="settingsNav settingsNav--left" aria-label="一级设置">
+                    <button class="settingsNav__item isActive" type="button" data-settings-top="account">
+                      <div class="settingsNav__name">账号设置</div>
+                      <div class="settingsNav__hint">登录、个人信息</div>
+                    </button>
+                    <button class="settingsNav__item" type="button" data-settings-top="network">
+                      <div class="settingsNav__name">网络设置</div>
+                      <div class="settingsNav__hint">连接、代理</div>
+                    </button>
+                    <button class="settingsNav__item" type="button" data-settings-top="xq">
+                      <div class="settingsNav__name">小乔设置</div>
+                      <div class="settingsNav__hint">语气、能力</div>
+                    </button>
+                    <button class="settingsNav__item" type="button" data-settings-top="general">
+                      <div class="settingsNav__name">通用设置</div>
+                      <div class="settingsNav__hint">外观、语言</div>
+                    </button>
+                    <button class="settingsNav__item" type="button" data-settings-top="a11y">
+                      <div class="settingsNav__name">无障碍设置</div>
+                      <div class="settingsNav__hint">字体、对比度</div>
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="stage">
+                <div class="stageHeader">
+                  <div class="stageHeader__title">小乔 你的专属伙伴</div>
+                  <div class="stageHeader__meta">
+                    <div class="stageHeader__dateWrap" aria-label="当前日期（含农历）">
+                      <span id="currentDateSolar" class="stageHeader__dateLine"></span>
+                      <span id="currentDateLunar" class="stageHeader__dateLine stageHeader__dateLine--lunar"></span>
+                    </div>
+                    <span id="currentTimeCn" class="stageHeader__time" aria-label="当前时间（12小时制）"></span>
+                  </div>
+                </div>
+
+                <div class="hero" id="chatView">
+                  <div class="heroMedia" role="img" aria-label="Cover image">
+                    <img
+                      class="heroMedia__img"
+                      src="{{ url_for('static', filename='img/hero.svg') }}"
+                      alt=""
+                      loading="lazy"
+                    />
+                  </div>
+
+                  <div class="chatHeader" aria-label="当前聊天对象">
+                    <div class="chatHeader__title" id="chatTargetTitle">—</div>
+                    <button class="chatHeader__btn" id="chatClearBtn" type="button" aria-label="删除聊天记录">删除</button>
+                  </div>
+
+                  <div class="heroScroll" aria-label="Chat scroll area">
+                    <div class="bubbleLayer" id="chatBubbles" aria-label="Chat messages">
+                      {% for b in bubbles %}
+                      <div class="bubble bubble--{{ b.side }} bubble--p{{ loop.index }}">
+                        <div class="bubble__avatar"></div>
+                        <div class="bubble__card">
+                          <div class="bubble__text">{{ b.title }}</div>
+                          {% if b.sub %}
+                          <div class="bubble__sub">{{ b.sub }}</div>
+                          {% endif %}
+                        </div>
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+
+                  <div class="composer" aria-label="Message bar (no function)">
+                    <div class="composer__left">
+                      <input class="composer__input" id="chatInput" placeholder="请输入消息（演示）" />
+                    </div>
+                    <div class="composer__right">
+                      <button class="miniBtn" id="chatMicBtn" type="button" aria-label="Voice input">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path
+                            d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z"
+                            stroke="currentColor"
+                            stroke-width="1.6"
+                          />
+                          <path
+                            d="M19 11a7 7 0 0 1-14 0"
+                            stroke="currentColor"
+                            stroke-width="1.6"
+                            stroke-linecap="round"
+                          />
+                          <path
+                            d="M12 18v3"
+                            stroke="currentColor"
+                            stroke-width="1.6"
+                            stroke-linecap="round"
+                          />
+                          <path
+                            d="M9.5 21h5"
+                            stroke="currentColor"
+                            stroke-width="1.6"
+                            stroke-linecap="round"
+                          />
+                        </svg>
+                      </button>
+                      <button class="miniBtn" id="chatPlusBtn" type="button" aria-label="Upload file">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path d="M12 5v14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                          <path d="M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                        </svg>
+                      </button>
+                      <button class="miniBtn miniBtn--accent" id="chatSendBtn" type="button" aria-label="Send">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path
+                            d="M22 2 11 13"
+                            stroke="currentColor"
+                            stroke-width="1.6"
+                            stroke-linecap="round"
+                          />
+                          <path
+                            d="M22 2 15 22l-4-9-9-4 20-7Z"
+                            stroke="currentColor"
+                            stroke-width="1.6"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="settingsShell" id="settingsView" hidden aria-label="Settings view">
+                  <div class="settingsCard" role="region" aria-label="Settings content">
+                    <div class="settingsCard__header">
+                      <div class="settingsCard__title">设置</div>
+                      <div class="settingsCard__sub">点击左侧齿轮进入设置</div>
+                    </div>
+                    <section class="settingsMain settingsMain--solo" aria-label="二级设置与详情">
+                      <div class="settingsMain__header">
+                        <div class="settingsMain__crumb" id="settingsCrumb">账号设置</div>
+                      </div>
+                      <div class="settingsMain__content" id="settingsContent">
+                        <!-- filled by settings.js -->
+                      </div>
+                    </section>
+                  </div>
+                </div>
+
+              </section>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div
+      class="modal modal--addContact"
+      id="addContactModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="addContactModalTitle"
+      hidden
+    >
+      <div class="modal__backdrop" data-add-contact-dismiss="true" tabindex="-1" aria-hidden="true"></div>
+      <div class="modal__panel addContactModal__panel" role="document">
+        <div class="modal__header">
+          <div class="modal__title" id="addContactModalTitle">添加联系人</div>
+          <button class="modal__close" type="button" aria-label="关闭" data-add-contact-dismiss="true">×</button>
+        </div>
+        <form id="addContactForm" class="addContactModal__form" novalidate>
+          <div class="modal__body">
+            <p class="addContactModal__hint" id="addContactCategoryHint"></p>
+            <label class="addContactModal__label" for="addContactName">联系人姓名</label>
+            <input
+              class="addContact__input"
+              id="addContactName"
+              name="contactName"
+              type="text"
+              autocomplete="name"
+              placeholder="请输入联系人姓名"
+            />
+            <div class="addContact__error" id="addContactError" role="status" aria-live="polite"></div>
+          </div>
+          <div class="modal__footer">
+            <button class="modalBtn" type="button" data-add-contact-dismiss="true">取消</button>
+            <button class="modalBtn modalBtn--accent" type="submit">添加</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="userModal" role="dialog" aria-modal="true" aria-labelledby="userModalTitle" hidden>
+      <div class="modal__backdrop" data-close="true"></div>
+      <div class="modal__panel" role="document">
+        <div class="modal__header">
+                <div class="modal__title" id="userModalTitle">用户信息</div>
+          <button class="modal__close" type="button" aria-label="关闭" data-close="true">×</button>
+        </div>
+        <div class="modal__body">
+          <div class="modalView" id="profileView">
+            <div class="userCard">
+              <div class="userCard__avatar" id="userAvatar" aria-label="用户头像">读</div>
+              <div class="userCard__info">
+                <div class="userCard__name" id="userNickname">读春少</div>
+                <div class="userCard__meta">
+                  <div class="userCard__row">
+                    <span class="userCard__k">生日</span>
+                    <input class="userCard__input" id="userBirthdayInput" type="date" value="2026-03-30" />
+                  </div>
+                  <div class="userCard__row"><span class="userCard__k">年龄</span><span class="userCard__v" id="userAge">—</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modalView" id="loginView" hidden>
+            <form class="loginForm" id="loginForm">
+              <div class="loginForm__row">
+                <label class="loginForm__label" for="loginUsername">用户名</label>
+                <input class="loginForm__input" id="loginUsername" name="username" autocomplete="username" />
+              </div>
+              <div class="loginForm__row">
+                <label class="loginForm__label" for="loginPassword">密码</label>
+                <input class="loginForm__input" id="loginPassword" name="password" type="password" autocomplete="current-password" />
+              </div>
+              <div class="loginForm__row" id="registerBirthdayRow" hidden>
+                <label class="loginForm__label" for="registerBirthday">生日</label>
+                <input class="loginForm__input" id="registerBirthday" name="birthday" type="date" />
+              </div>
+              <div class="loginForm__hintRow">
+                <button class="loginForm__link" type="button" id="toggleRegisterBtn">没有账号？注册</button>
+              </div>
+              <div class="loginForm__error" id="loginError" role="status" aria-live="polite"></div>
+            </form>
+          </div>
+        </div>
+        <div class="modal__footer">
+          <button class="modalBtn" type="button" id="modalSecondaryBtn">切换用户</button>
+          <button class="modalBtn modalBtn--danger" type="button" id="modalPrimaryBtn">退出登陆</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="quickWidgetModal" role="dialog" aria-modal="true" aria-labelledby="quickWidgetModalTitle" hidden>
+      <div class="modal__backdrop" data-quick-widget-close="true"></div>
+      <div class="modal__panel" role="document" style="right:auto;left:96px;top: calc(var(--topbarH) + 14px); width: min(420px, calc(100vw - 120px));">
+        <div class="modal__header">
+          <div class="modal__title" id="quickWidgetModalTitle">添加小组件</div>
+          <button class="modal__close" type="button" aria-label="关闭" data-quick-widget-close="true">×</button>
+        </div>
+        <div class="modal__body">
+          <div class="quickPicker" id="quickPicker">
+            <button class="quickPickBtn" type="button" data-widget-type="weather">当前天气</button>
+            <button class="quickPickBtn" type="button" data-widget-type="notes">记事本</button>
+            <button class="quickPickBtn" type="button" data-widget-type="meds">用药提醒</button>
+            <button class="quickPickBtn" type="button" data-widget-type="todos">提醒事项</button>
+            <button class="quickPickBtn" type="button" data-widget-type="calendar">日历</button>
+          </div>
+          <div class="quickPicker__hint">添加后可在卡片右上角删除。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="weatherCityModal" role="dialog" aria-modal="true" aria-labelledby="weatherCityModalTitle" hidden>
+      <div class="modal__backdrop" data-weather-city-close="true"></div>
+      <div class="modal__panel" role="document" style="right:auto;left:96px;top: calc(var(--topbarH) + 14px); width: min(520px, calc(100vw - 120px));">
+        <div class="modal__header">
+          <div class="modal__title" id="weatherCityModalTitle">切换城市</div>
+          <button class="modal__close" type="button" aria-label="关闭" data-weather-city-close="true">×</button>
+        </div>
+        <div class="modal__body">
+          <div class="quickRow" style="margin-top:2px">
+            <input class="quickInput" id="weatherCityQuery" placeholder="输入城市名（如：九龙城 / 北京 / Shanghai）" />
+            <button class="quickSmallBtn quickSmallBtn--primary" type="button" id="weatherCitySearchBtn">搜索</button>
+          </div>
+          <div class="quickPicker__hint" style="margin-top:12px">选择一个城市后会保存并用于获取天气。</div>
+          <div class="quickList" id="weatherCityResults" style="margin-top:10px; max-height: 260px;"></div>
+        </div>
+        <div class="modal__footer">
+          <button class="modalBtn" type="button" id="weatherCityUseGeoBtn">使用当前位置</button>
+          <button class="modalBtn modalBtn--danger" type="button" data-weather-city-close="true">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="authGate" id="authGate" hidden>
+      <div class="authGate__bg" aria-hidden="true"></div>
+      <div class="authGate__frost" aria-hidden="true"></div>
+      <div class="authGate__card" role="region" aria-label="登录首页">
+        <div class="authGate__logo" aria-hidden="true">
+          <img class="authGate__logoImg" src="{{ url_for('static', filename='img/logo.png', v='20260414t') }}" alt="" />
+        </div>
+        <div class="authGate__brand">Silverbridge</div>
+        <div class="authGate__actions" aria-label="登录注册操作">
+          <button class="authGate__btn authGate__btn--primary" type="button" id="authPrimaryBtn">登录</button>
+          <button class="authGate__btn" type="button" id="authSecondaryBtn">注册</button>
+        </div>
+
+        <form class="authGate__form" id="authGateForm" hidden>
+          <div class="authGate__row">
+            <label class="authGate__label" for="gateUsername">用户名</label>
+            <input class="authGate__input" id="gateUsername" autocomplete="username" />
+          </div>
+          <div class="authGate__row">
+            <label class="authGate__label" for="gatePassword">密码</label>
+            <input class="authGate__input" id="gatePassword" type="password" autocomplete="current-password" />
+          </div>
+          <div class="authGate__row" id="gateBirthdayRow" hidden>
+            <label class="authGate__label" for="gateBirthday">生日</label>
+            <input class="authGate__input" id="gateBirthday" type="date" />
+          </div>
+          <div class="authGate__error" id="gateError" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/fit.js', v='20260414f1') }}"></script>
+    <script src="{{ url_for('static', filename='js/date-cn.js') }}"></script>
+    <script>
+      window.__USER__ = {{ {"nickname":"GROUP1","birthday":"2026-03-30"} | tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='js/user-modal.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/contacts-tabs.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/contacts-add.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/messages-seed.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/whisper-local.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chat.js', v='20260414c1') }}"></script>
+    <script src="{{ url_for('static', filename='js/settings.js', v='20260414l9') }}"></script>
+    <script src="{{ url_for('static', filename='js/font-scale.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/auth-gate.js') }}"></script>
+  </body>
+</html>

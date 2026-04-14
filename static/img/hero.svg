@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7efe6"/>
+      <stop offset="0.45" stop-color="#efe0cf"/>
+      <stop offset="1" stop-color="#f8f4ee"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.7" cy="0.35" r="0.9">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="0.55" stop-color="#ffffff" stop-opacity="0.15"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f7d7c6"/>
+      <stop offset="1" stop-color="#e6bca8"/>
+    </linearGradient>
+    <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fafafa"/>
+      <stop offset="1" stop-color="#cfcfcf"/>
+    </linearGradient>
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="10" result="blur"/>
+      <feOffset dx="0" dy="10" result="off"/>
+      <feColorMatrix in="off" type="matrix"
+        values="0 0 0 0 0
+                0 0 0 0 0
+                0 0 0 0 0
+                0 0 0 .22 0" result="shadow"/>
+      <feMerge>
+        <feMergeNode in="shadow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#glow)"/>
+
+  <!-- soft curtains / background -->
+  <path d="M1160,0 C1230,150 1220,340 1135,520 C1045,710 1060,830 1185,900 L1600,900 L1600,0 Z"
+        fill="#d7c2ad" opacity="0.35"/>
+  <path d="M1080,0 C1140,170 1130,330 1060,510 C980,710 1000,820 1120,900 L1600,900 L1600,0 Z"
+        fill="#e6d2bf" opacity="0.35"/>
+
+  <!-- couple illustration (simple abstract placeholder) -->
+  <g filter="url(#softShadow)">
+    <!-- man -->
+    <g transform="translate(970 190)">
+      <ellipse cx="250" cy="200" rx="155" ry="175" fill="url(#skin)"/>
+      <path d="M120,145 C150,70 220,35 295,38 C370,42 430,88 444,168 C402,122 354,112 292,116 C226,120 170,131 120,145Z"
+            fill="#f3f0ea" opacity="0.85"/>
+      <path d="M125,155 C170,92 240,60 305,64 C377,69 426,110 440,168 C416,122 362,104 305,104 C245,104 181,126 125,155Z"
+            fill="url(#hair)"/>
+      <circle cx="205" cy="210" r="10" fill="#4a3f37" opacity="0.65"/>
+      <circle cx="305" cy="210" r="10" fill="#4a3f37" opacity="0.65"/>
+      <path d="M220,260 C260,290 300,290 340,260" fill="none" stroke="#8b5e4b" stroke-width="10" stroke-linecap="round" opacity="0.5"/>
+      <path d="M95,360 C190,300 330,300 430,360 L450,710 C360,760 170,760 75,710Z"
+            fill="#caa582" opacity="0.85"/>
+    </g>
+
+    <!-- woman -->
+    <g transform="translate(560 235)">
+      <ellipse cx="250" cy="220" rx="155" ry="175" fill="url(#skin)"/>
+      <path d="M135,185 C140,88 225,35 300,45 C385,56 430,132 440,220 C400,155 345,148 280,156 C215,163 175,173 135,185Z"
+            fill="url(#hair)"/>
+      <path d="M150,210 C170,130 220,100 280,98 C345,96 395,132 420,200" fill="none" stroke="#f6f6f6" stroke-width="28" stroke-linecap="round" opacity="0.55"/>
+      <circle cx="205" cy="235" r="10" fill="#4a3f37" opacity="0.65"/>
+      <circle cx="305" cy="235" r="10" fill="#4a3f37" opacity="0.65"/>
+      <path d="M220,288 C260,315 300,315 340,288" fill="none" stroke="#8b5e4b" stroke-width="10" stroke-linecap="round" opacity="0.5"/>
+      <path d="M75,385 C180,330 320,330 430,385 L455,720 C360,770 160,770 55,720Z"
+            fill="#d4a087" opacity="0.75"/>
+    </g>
+  </g>
+
+  <!-- subtle vignette -->
+  <rect width="1600" height="900" fill="#000" opacity="0.04"/>
+</svg>
