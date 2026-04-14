@@ -5,6 +5,7 @@ python-dotenv>=1.0.0
 
 # 反诈语音/截图（第三方）
 baidu-aip>=4.16.0
+chardet>=5.2.0
 
 # 诈骗电话识别流水线（Excel 数据库可选）
 pandas>=2.2.0
