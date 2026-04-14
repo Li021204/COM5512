@@ -236,12 +236,25 @@ def audio_to_text_from_bytes(audio_bytes: bytes, audio_format: str = 'wav', samp
                 _LAST_ASR_ERROR = f"WAV 处理失败：{e}"
                 return ""
 
-        result = speech_client.asr(
-            data,
-            fmt,
-            sr,
-            {'dev_pid': 1537}  # 1537 = 普通话
-        )
+        try:
+            result = speech_client.asr(
+                data,
+                fmt,
+                sr,
+                {'dev_pid': 1537}  # 1537 = 普通话
+            )
+        except KeyError as e:
+            # baidu-aip sometimes raises KeyError('access_token') when auth fails
+            k = str(e).strip().strip("'").strip('"')
+            if k == "access_token":
+                _LAST_ASR_ERROR = (
+                    "百度ASR鉴权失败：获取 access_token 失败。"
+                    "请检查 SPEECH_API_KEY / SPEECH_SECRET_KEY 是否为同一个百度语音应用的一套，"
+                    "该应用是否已开通“语音识别”能力，密钥是否过期/被禁用，以及是否有调用额度。"
+                )
+                return ""
+            _LAST_ASR_ERROR = f"百度ASR异常：缺少字段 {k}"
+            return ""
         
         if result and result.get('err_no') == 0:
             recognized_text = ''.join(result.get('result', []))
