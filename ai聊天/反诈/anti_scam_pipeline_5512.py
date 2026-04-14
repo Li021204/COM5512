@@ -27,8 +27,10 @@ DATABASE_PATH = os.getenv("ANTI_SCAM_DATABASE_PATH", "").strip() or (_DEFAULT_DB
 # ==================== 可选依赖（OCR / 数据库） ====================
 try:
     from aip import AipOcr  # type: ignore
-except Exception:
+    _AIP_IMPORT_ERROR = ""
+except Exception as e:
     AipOcr = None  # type: ignore
+    _AIP_IMPORT_ERROR = f"{type(e).__name__}: {e}"
 
 try:
     import pandas as pd  # type: ignore

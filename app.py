@@ -42,6 +42,7 @@ def api_diag_anti_fraud():
                 "pipeline_loaded": True,
                 "has_baidu_ocr_env": has("BAIDU_APP_ID") and has("BAIDU_API_KEY") and has("BAIDU_SECRET_KEY"),
                 "aip_imported": bool(getattr(mod, "AipOcr", None)),
+                "aip_import_error": str(getattr(mod, "_AIP_IMPORT_ERROR", "") or "")[:260],
                 "baidu_client_initialized": bool(getattr(mod, "client", None)),
                 "last_ocr_error": str(getattr(mod, "_LAST_OCR_ERROR", "") or "")[:260],
             }
@@ -58,6 +59,7 @@ def api_diag_anti_fraud():
             "module_loaded": True,
             "has_baidu_asr_env": has("SPEECH_APP_ID") and has("SPEECH_API_KEY") and has("SPEECH_SECRET_KEY"),
             "aip_speech_imported": bool(getattr(mod2, "AipSpeech", None)),
+            "aip_import_error": str(getattr(mod2, "_AIP_IMPORT_ERROR", "") or "")[:260],
             "speech_client_initialized": bool(getattr(mod2, "speech_client", None)),
             "last_asr_error": str(getattr(mod2, "_LAST_ASR_ERROR", "") or "")[:260],
         }

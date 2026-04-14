@@ -10,9 +10,12 @@ import io
 import wave
 try:
     from aip import AipOcr, AipSpeech  # type: ignore
-except Exception:
+except Exception as e:
     AipOcr = None  # type: ignore
     AipSpeech = None  # type: ignore
+    _AIP_IMPORT_ERROR = f"{type(e).__name__}: {e}"
+else:
+    _AIP_IMPORT_ERROR = ""
 from typing import Optional, List, Dict, Any
 
 # ==================== 配置 ====================
